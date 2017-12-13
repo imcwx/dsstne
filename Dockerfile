@@ -2,7 +2,21 @@
 # AUTHOR:         DSSTNE Docker <dsstne-docker@amazon.com>
 # DESCRIPTION:    Docker image for Amazon DSSTNE
 
-FROM nvidia/cuda:8.0-cudnn6-devel-ubuntu14.04
+FROM nvidia/cuda:8.0-cudnn6-devel-ubuntu16.04
+
+RUN apt-get update && apt-get install -y make \
+   build-essential \
+   cmake \
+   g++  \
+   gcc \
+   libatlas-base-dev \
+   wget
+
+# ENV CUDA_MAJOR=7.0 \
+#   CUDA_VERSION=7.0.28 \
+#   CUDA_MAJOR_U=7_0 \
+#   GPU_DRIVER_VERSION=346.72
+
 
 # Suppress interactive prompts while installing base packages
 ENV DEBIAN_FRONTEND=noninteractive
@@ -28,13 +42,14 @@ RUN cd /tmp  &&  \
 
 # Install JSONCPP
 RUN cd /tmp  && \
+    apt-get install -y python && \
     wget https://github.com/open-source-parsers/jsoncpp/archive/svn-import.tar.gz && \
-    tar xvfz svn-import.tar.gz && \
-    cd jsoncpp-svn-import && \
-    mkdir -p build/release && \
-    cd build/release && \
+    tar xvfz svn-import.tar.gz &&\
+    cd jsoncpp-svn-import &&\
+    mkdir -p build/release &&\
+    cd build/release &&\
     cmake -DCMAKE_BUILD_TYPE=release -DJSONCPP_LIB_BUILD_SHARED=OFF -G "Unix Makefiles" ../.. && \
-    make -j 8 && \
+    make &&\
     make install && rm -rf /tmp/*
 
 # Install hdf5
